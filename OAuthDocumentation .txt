@@ -1,0 +1,67 @@
+Client Registration:
+How do developers register a new client application to obtain a client ID and optionally a secret?
+
+On a web page? Provide a link to the registration page.
+Programmatically? Your service may implement the Dynamic Client Registration spec, or have a proprietary API for registering applications
+Do you provide other mechanisms for developers to register applications? You will need to describe other ways to register apps if so.
+Your service should at a minimum ask developers whether their application is a confidential or public client, and provide a way to register redirect URIs. Aside from those, you should document other information you collect about an application, and indicate which pieces of information are shown to the end-user during the authorization request.
+
+Application name:
+Web page about the application
+Description
+Logo or other images
+Web page about the application’s terms of use
+Other information?
+Endpoints
+There are two primary endpoints developers will be using during the OAuth process. Your authorization endpoint is where the users will be directed to begin the authorization flow. After the application obtains an authorization code, it will exchange that code for an access token at the token endpoint. The token endpoint is also responsible for issuing access tokens for other grant types.
+
+You need to let developers know the URLs for these two endpoints they will be using.
+
+Client Authentication:
+When client authentication is required in a request, such as in the Authorization Code grant, there are two ways your service can accept the client ID and secret in the request. Your service can accept the authentication in an HTTP Basic Auth header using the client ID as the username and secret as the password, or by accepting the strings in the post body as client_id and client_secret. It is up to your service whether you want to accept either or both of these methods, so you need to tell your developers how you expect them to include this authentication in requests.
+
+Additionally, your service may support other forms of client authentication, such as a public/private key pair. This is relatively uncommon in currently deployed OAuth 2.0 implementations, but the spec leaves that open as a possibility.
+
+There are no requirements on the maximum or minimum length of client IDs and secrets issued to applications, so it’s usually a good idea to let your developers know how big to expect these strings to be, so that they can store them appropriately.
+
+Sizes of Strings:
+Since developers won’t see an authorization code or access token likely until they’ve started writing code, you should document the maximum sizes of strings they will be encountering.
+
+Client ID
+Client Secret
+Authorization Code
+Access Token
+Response Types
+Which response types does your service support? Typically services will support just the “code” response type for web-based and native apps. However if your service also supports the “token” response type (issuing tokens without the intermediate authorization code), that’s important to call out in the documentation. You should document whether your service supports either or both, and whether you have additional response types that are supported as well.
+
+Redirect URL Restrictions:
+Your service may place restrictions on registered redirect URLs that developers can use. For example, it is common that a service will disallow developers to use non-TLS http endpoints, or restrict those to be used by non-production applications. While supporting custom schemes is important for supporting native apps, some services disallow these as well. You should document any requirements you place on registering redirect URLs.
+
+Default Scopes:
+If the developer does not specify a scope during the authorization request, the service may assume a default scope for that request. If that is the case, you should document what the default scope is.
+
+The authorization server may ignore the scope that the developer requests, or add additional scopes beyond what is requested. The server may also allow the user to change the scope from what is requested. If any of these are possible, the service should clearly point that out to developers so that they can account for the access token possibly having different scopes than they had requested.
+
+The service should also document the lifetime of the authorization codes issued, so developers know approximately how long they can expect the codes to last between being issued and being used. The authorization server may also prevent a code from being used more than once, and should document this if so.
+
+Access Token Response:
+When you issue an access token, the access token response lists a number of parameters that are optional. You should document which of these your service supports, so developers know what to expect.
+
+When does the response include an expires_in parameter? Your service may always include it if the token expires, or your service can document a default expiration developers should expect if this value is not in the response.
+
+Does the response always include the scope of the access token that is granted? It’s usually a good idea to return this in the response, but many services leave it out if the granted scope matches the requested scope. Either way, you should document the way your server behaves for this parameter.
+
+Refresh Tokens:
+One of the more confusing or frustrating aspects for developers of OAuth 2.0 APIs is around refresh tokens. It’s important to make it very clear how your service deals with refresh tokens if at all.
+
+If your access tokens expire, you likely want to support refresh tokens so developers can build applications that continue to have access to users’ accounts without the user continually re-authorizing the application.
+
+You should clearly document which of the supported grant types include a refresh token in the response, and under what circumstances.
+
+When your service issues a new access token in response to a refresh token grant, it is possible for your service to issue a new refresh token simultaneously, and expire the previous one. This means refresh tokens rotate out frequently, which may be desirable for your application. If this is the case, ensure developers know this will happen so they don’t mistakenly assume the first refresh token they obtain will continue to work indefinitely.
+
+Extension Grants:
+In addition to the four basic grant types, Authorization Code, Password, Client Credentials and Implicit, your service may support additional grant types.
+
+Some grant types are standardized as extensions to OAuth 2.0, such as the Device Flow and SAML. Some services also implement their own custom grant types, such as when migrating a legacy API to OAuth 2.0. It’s important to document the additional grant types your service supports, and provide documentation for how to use them.What is OAuth flow?
+OAuth 2 is an authorization framework that enables applications to obtain limited access to user accounts on an HTTP service, such as Facebook, GitHub, and DigitalOcean. OAuth 2 provides authorization flows for web and desktop applications, and mobile devices.
